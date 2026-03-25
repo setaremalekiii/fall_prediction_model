@@ -13,7 +13,7 @@ Fs = 1000;                % consistent with  pipeline
 winLen_s  = 3.0;           % MUST match training
 step_s    = 1.5;           % match ADL stride used in training
 minN      = 50;            % minimum samples for feature extraction in a window
-confThresh = 0.55;         % optional confidence gate (lower = more events)
+confThresh = 0.75;         % optional confidence gate (lower = more events)
 
 imu_sources_union = {'Sternum','Left_Arm','Right_Arm','Back','Left_Thigh','Right_Thigh'};
 
