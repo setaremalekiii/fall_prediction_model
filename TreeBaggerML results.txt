@@ -9,3 +9,29 @@ Training summary:
  Total:         1117
  Feature length: 84
 Saved trained_model.mat
+
+%% Validation Accuracy
+cv = cvpartition(y, 'HoldOut', 0.2);
+Xtr = X(training(cv),:);  ytr = y(training(cv));
+Xva = X(test(cv),:);      yva = y(test(cv));
+
+Mdl_val = TreeBagger(100, Xtr, string(ytr), ...
+    'Method','classification', ...
+    'ClassNames',["0","1","2"], ...
+    'Prior','empirical');
+
+pred = str2double(predict(Mdl_val, Xva));
+confusionchart(yva, pred);
+disp("Validation accuracy:");
+disp(mean(pred == yva));
+
+%% Test Data info
+T = load("GrandChallengeTestData.mat","test_data");
+pid = "P1544";
+tr = fieldnames(T.test_data.(pid));
+trial = tr{1};
+
+size(T.test_data.(pid).(trial).ECG)
+size(T.test_data.(pid).(trial).GSS)
+size(T.test_data.(pid).(trial).Sternum)
+%%
