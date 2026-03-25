@@ -246,6 +246,18 @@ for p = 1:numel(participants)
         confMax = max(scores,[],2);
         pred(confMax < confThresh) = 0;
 
+        % Require >=2 consecutive windows for label 1/2 (removes one-off spikes)
+        pred2 = pred;
+        for k = 1:numel(pred)
+            if pred(k)==0, continue; end
+            left  = (k>1) && (pred(k-1)==pred(k));
+            right = (k<numel(pred)) && (pred(k+1)==pred(k));
+            if ~(left || right)
+                pred2(k) = 0;
+            end
+        end
+        pred = pred2;
+
         % Keep only labels 1/2 for submission
         keep = pred ~= 0;
         out = [time_ranges(keep,:), pred(keep)];
