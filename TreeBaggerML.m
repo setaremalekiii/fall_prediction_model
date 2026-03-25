@@ -1,6 +1,7 @@
 % TreeBagger training with location-robust IMU features (magnitude + aggregation)
 % + SAFE filtering + SAFE feature extraction (prevents filtfilt + FFT edge-case errors)
 
+clear; clc; close all;
 %% Load Data (loads all_data, clean_labels)
 load("GrandChallengeData.mat");
 
