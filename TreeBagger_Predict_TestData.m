@@ -168,18 +168,11 @@ end
 
 %% Helper Write CSV  
 function writeCSV(outDir, pid, trialName, out)
-    tok = regexp(trialName, 'T\d\d', 'match', 'once');
+    tok = regexp(trialName, 'T\d\d[A-Z]?', 'match', 'once');  % matches T01, T01A, T08B
     if isempty(tok)
-        % fallback: grab digits and format
-        digs = regexp(trialName,'\d+','match','once');
-        if isempty(digs)
-            tok = trialName;
-        else
-            tok = sprintf("T%02d", str2double(digs));
-        end
+        tok = regexp(trialName, 'T\d\d', 'match', 'once');
     end
-
-    fname = fullfile(outDir, sprintf("%s_%s.csv", pid, tok));
+    filename = fullfile(outDir, sprintf("%s_%s.csv", pid, tok));
 
     % required: no header
     if isempty(out)
