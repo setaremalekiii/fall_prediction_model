@@ -212,24 +212,24 @@ for p = 1:length(participants)
 
         start_times = tvec(1):adl_stride:(tvec(end)-window_size_sec);
         if isempty(start_times), continue; end
-
-        mid = round(length(start_times)/2);
-        idxs = unique([1:min(3,end), mid-1:mid+1, max(end-2,1):end]);
-        idxs = idxs(idxs>=1 & idxs<=length(start_times));
-
+        
+        nStarts = length(start_times);
+        mid = round(nStarts/2);
+        
+        idxs = unique([1:min(3,nStarts), mid-1:mid+1, max(nStarts-2,1):nStarts]);
+        idxs = idxs(idxs>=1 & idxs<=nStarts);
+        
         for i = 1:min(num_adl_windows, length(idxs))
             win_start = start_times(idxs(i));
             win_end   = win_start + window_size_sec;
-
+        
             fv = extract_features_from_window(data_struct, win_start, win_end, Fs, imu_sources);
-
+        
             if ~isempty(fv)
-                if isempty(expected_length)
-                    expected_length = length(fv);
-                end
+                if isempty(expected_length), expected_length = length(fv); end
                 if length(fv) == expected_length
                     X = [X; fv];
-                    y = [y; 0]; % ADL
+                    y = [y; 0];
                 end
             end
         end
