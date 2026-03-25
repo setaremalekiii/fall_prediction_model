@@ -201,35 +201,57 @@ for p = 1:length(participants)
 
     for t = 1:length(trials)
         trial = trials{t};
+
+        % Only use trials that look like ADL based on keywords
         if ~any(contains(trial, adl_keywords)), continue; end
 
         data_struct = all_data.(participant).(trial);
 
-        % Pick any available IMU for time base 
+        % Pick any available IMU as time base (do NOT require Back)
         imuAvail = imu_sources(ismember(imu_sources, fieldnames(data_struct)));
         if isempty(imuAvail), continue; end
-        tvec = data_struct.(imuAvail{1})(:,1);
 
+        imu0 = data_struct.(imuAvail{1});
+        if isempty(imu0) || size(imu0,2) < 2
+            continue;
+        end
+
+        tvec = imu0(:,1);
+
+        % Guard against empty/short signals
+        if isempty(tvec) || numel(tvec) < 2
+            continue;
+        end
+
+        % Guard: must be long enough for a full window
+        if (tvec(end) - tvec(1)) < window_size_sec
+            continue;
+        end
+
+        % Candidate start times for windows
         start_times = tvec(1):adl_stride:(tvec(end)-window_size_sec);
         if isempty(start_times), continue; end
-        
+
         nStarts = length(start_times);
         mid = round(nStarts/2);
-        
+
+        % Choose a few windows spread across the trial (early/mid/late)
         idxs = unique([1:min(3,nStarts), mid-1:mid+1, max(nStarts-2,1):nStarts]);
         idxs = idxs(idxs>=1 & idxs<=nStarts);
-        
+
         for i = 1:min(num_adl_windows, length(idxs))
             win_start = start_times(idxs(i));
             win_end   = win_start + window_size_sec;
-        
+
             fv = extract_features_from_window(data_struct, win_start, win_end, Fs, imu_sources);
-        
+
             if ~isempty(fv)
-                if isempty(expected_length), expected_length = length(fv); end
+                if isempty(expected_length)
+                    expected_length = length(fv);
+                end
                 if length(fv) == expected_length
                     X = [X; fv];
-                    y = [y; 0];
+                    y = [y; 0];  % ADL
                 end
             end
         end
