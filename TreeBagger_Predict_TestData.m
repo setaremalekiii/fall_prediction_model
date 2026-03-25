@@ -1,8 +1,6 @@
 % Generates required prediction CSVs from GrandChallengeTestData.mat using trained TreeBagger model
 % Output format per file: [start_s, end_s, label] with label 1=near-fall, 2=fall (no header)
 
-clear; clc;
-
 %% Settings 
 testMatPath   = "GrandChallengeTestData.mat";
 modelPath     = "trained_model.mat";
@@ -172,7 +170,7 @@ function writeCSV(outDir, pid, trialName, out)
     if isempty(tok)
         tok = regexp(trialName, 'T\d\d', 'match', 'once');
     end
-    filename = fullfile(outDir, sprintf("%s_%s.csv", pid, tok));
+    fname = fullfile(outDir, sprintf("%s_%s.csv", pid, tok));
 
     % required: no header
     if isempty(out)
@@ -234,7 +232,7 @@ for p = 1:numel(participants)
             continue;
         end
 
-        % Normalize: since you used zscore in training but didn’t save mu/sigma,
+        % Normalize: since you used zscore in training but didn't save mu/sigma,
         % we standardize per-trial feature matrix as a practical fallback.
         Xtest = zscore(Xtest);
 
