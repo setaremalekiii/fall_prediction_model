@@ -6,7 +6,7 @@ Fs = 1000;
 window_size_sec = 3;
 expected_length = 280;
 
-imu_sources = {'Back', 'Right_Thigh', 'Left_Thigh', 'Sternum'};
+imu_sources = {'Back', 'Right_Thigh', 'Left_Thigh'};
 adl_keywords = {'Stand','Stairs','Jog','Pick','Sit','Walk','Lie','JJ'};
 
 X = [];
